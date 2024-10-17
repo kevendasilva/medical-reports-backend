@@ -1,0 +1,45 @@
+services:
+  app:
+    image: kevendasilva/medical-reports-frontend:latest
+    restart: always
+    environment:
+      PORT: 9998
+      API_URL: http://api:3000/laudos
+    ports:
+      - "9998:9998"
+    depends_on:
+      - api
+    networks:
+      - medical-reports-network
+  api:
+    # build: .
+    image: kevendasilva/medical-reports-backend:latest
+    restart: always
+    environment:
+      MEDICAL_REPORTS_DATABASE_USERNAME: medical-reports-user
+      MEDICAL_REPORTS_DATABASE_PASSWORD: 2b67b210fbb0573950e971b771948c36dbc42fc1cc513c5568444ed2fef9295e8fd20491e2b45ed7fbf99bdb5913711a3b87e944ac32cc2cb916c5b4969295c5
+      MEDICAL_REPORTS_DATABASE_HOST: db
+      MEDICAL_REPORTS_DATABASE_PORT: 5432
+    ports:
+      - "9999:3000"
+    depends_on:
+      - db
+    networks:
+      - medical-reports-network
+
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: medical-reports-user
+      POSTGRES_PASSWORD: 2b67b210fbb0573950e971b771948c36dbc42fc1cc513c5568444ed2fef9295e8fd20491e2b45ed7fbf99bdb5913711a3b87e944ac32cc2cb916c5b4969295c5
+      POSTGRES_DB: medical-reports
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - medical-reports-network
+
+volumes:
+  postgres_data:
+networks:
+  medical-reports-network:
