@@ -1,5 +1,16 @@
 #!/bin/bash -e
 
+set -e
+
+# Verifica se a chave já foi gerada e salva no arquivo
+if [ ! -f /rails/secret_key_base ]; then
+  echo "Gerando SECRET_KEY_BASE..."
+  SECRET_KEY_BASE=$(bin/rails secret)
+fi
+
+# Exporta a chave para o ambiente
+export SECRET_KEY_BASE
+
 # If running the rails server then create or migrate existing database
 if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   ./bin/rails db:prepare
