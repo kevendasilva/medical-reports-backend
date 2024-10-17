@@ -46,3 +46,5 @@ group :development do
 end
 
 gem "jbuilder", "~> 2.13"
+
+gem "ransack", "~> 4.2"
