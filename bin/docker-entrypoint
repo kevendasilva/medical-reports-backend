@@ -4,7 +4,6 @@ set -e
 
 # Verifica se a chave já foi gerada e salva no arquivo
 if [ ! -f /rails/secret_key_base ]; then
-  echo "Gerando SECRET_KEY_BASE..."
   SECRET_KEY_BASE=$(bin/rails secret)
 fi
 
