@@ -6,7 +6,7 @@ class LaudosController < ApplicationController
     @q = Laudo.ransack(params[:q])
 
     if params.key?(:t) && params[:t].blank?
-      render json: { error: 'Termo de busca não informado' }, status: :bad_request
+      render json: { error: 'Termo da busca não informado' }, status: :bad_request
     elsif params.key?(:t) && params[:t].present?
       @q.texto_cont = params[:t]
       @laudos = @q.result(distinct: true).order(created_at: :desc).limit(50)
