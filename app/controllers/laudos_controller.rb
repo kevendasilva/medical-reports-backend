@@ -1,3 +1,8 @@
+# frozen_string_literal: true
+
+require 'hexapdf'
+require 'stringio'
+
 class LaudosController < ApplicationController
   before_action :set_laudo, only: %i[show update destroy]
 
@@ -25,7 +30,28 @@ class LaudosController < ApplicationController
   # POST /laudos
   def create
     @laudo = Laudo.new(laudo_params)
-    process_file(@laudo, params[:arquivo])
+    uploaded_file = params[:arquivo]
+
+    if uploaded_file.nil?
+      render json: { error: 'Nenhum arquivo foi enviado' }, status: :unprocessable_entity
+      return
+    end
+
+    begin
+      file_io = uploaded_file.tempfile
+
+      pdf_document = HexaPDF::Document.open(file_io)
+
+      unless pdf_document.signatures.any?
+        render json: { error: 'O arquivo enviado não está assinado' }, status: :unprocessable_entity
+        return
+      end
+    rescue StandardError => e
+      render json: { error: "Erro ao processar PDF: #{e.message}" }, status: :unprocessable_entity
+      return
+    end
+
+    process_file(@laudo, uploaded_file)
 
     if @laudo.save
       render json: @laudo, status: :created, location: @laudo
